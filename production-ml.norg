@@ -286,7 +286,7 @@
     ~~~ If training data was stored in a file, compress it, name it with the git hash, put in s3 bucket
     ~~~ If training data was formed using many database queries, store the queries in a file, name with hash, put in bucket
     ~~ At runtime, when data goes in, store the query, or code used to make the query along with a dict in S3
-    ~~~ *Strongly Recommended*: save code for diagnostic plots in an s3 bucket, so you can diagnose the problem immediately
+    ~~~ Strongly Recommended: save code for diagnostic plots in an s3 bucket, so you can diagnose the problem immediately
     ~~ Put all these s3 paths in a json and store in s3
     ~~~ Put any unique identifiers (e.g. client_id, machine_id) in the filename, along with a timestamp
     ~~ If model is pickled, grab that pickle path too

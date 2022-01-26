@@ -554,8 +554,10 @@ and if the data is fresh! We can implement that as follows:
                           logging.info("Current time: {}, latest data time: {}".format(self.time, max_time))
                       else:
                           logging.critical("Data missing key {}".format(k))
+                          self.has_data = False
                   else:
                       logging.critical("No data returned for key {}".format(k))
+                      self.has_data = False
               return
       
 

@@ -1,0 +1,107 @@
+=TOC
+
+* Computer Vision
+  From basic building blocks to resnets and friends
+
+* Image representation
+  Its just numbers. Lets look at this grayscale image:
+
+  @code
+              ┌───────┐
+   ┌──────┐   │0 0 0 0│
+   │  --  │ = │0 1 1 0│
+   └──────┘   │0 0 0 0│
+              └───────┘
+  
+  @end
+
+  Pretty simple. In reality, an NxN grayscale image is a NxN matrix,
+  with each number between 0 and 256 (an integer). 
+
+* Color images
+  we simply have 3 matrices stacked on each other
+
+  @code
+                                  ┌───────┐
+                                  │0 0 0 0│
+                             ┌───►│0 1 1 0│
+               ┌┌┌───────┐   │    │0 0 0 0│
+   ┌──────┐    │││0 0 0│ │   │    └───────┘
+   │  --  │ =  │││1 1 0│ ├───┼┐    ┌───────┐
+   └──────┘    │││0 0 0│ │   ││    │0 0 0 0│
+               └└└───────┘   │└───►│0 1 1 0│
+                             │     │0 0 0 0│
+                             │     └───────┘
+                             │     ┌───────┐
+                             │     │0 0 0 0│
+                             └────►│0 1 1 0│
+                                   │0 0 0 0│
+                                   └───────┘
+  
+  @end
+
+
+* The Convolution
+  We simply run a window the image, do a multiplication of the kernel over the window, sum, and that is the new pixel:
+  @code
+  
+  
+                 original image
+           ┌───────────────────────┐
+           │ 0   0   0   0   0    0│       filter/kernel
+           │ 0  255 255 255 255   0│        ┌────────┐
+           │ 0  255  58  58 255   0│        │-1 -1 -1│
+           │ 0  255  58  58 255   0│        │-1  8 -1│ 
+           │ 0  255  58  58 255   0│        │-1 -1 -1│
+           │ 0  255  58  58 255   0│        └────┬───┘
+           │ 0  255  58  58 255   0│             │
+           │ 0  255 255 255 255   0│             │
+           │ 0   0   0   0   0    0│             │
+           └───────────┬───────────┘             │
+                       │                         │
+                       │                         │
+                       └───────────┐ ┌───────────┘
+                                   ▼ ▼
+                                 new image      
+                           ┌───────────────────────┐ 
+                           │ 0   0   0   0   0    0│ 
+                           │ 0  255 255 255 255   0│ 
+                           │ 0  255  0   0  255   0│ 
+                           │ 0  255  0   0  255   0│ 
+                           │ 0  255  0   0  255   0│ 
+                           │ 0  255  0   0  255   0│ 
+                           │ 0  255  0   0  255   0│ 
+                           │ 0  255 255 255 255   0│ 
+                           │ 0   0   0   0   0    0│ 
+                           └───────────────────────┘ 
+  
+  
+  
+  @end
+
+* Convolution code
+  @code python
+  
+  def convolution2d(image, kernel):
+    m, n = kernel.shape
+    if (m == n):
+      y, x = image.shape
+      y = y - m + 1
+      x = x - m + 1
+      new_image = np.zeros((y,x))
+      for i in range(y):
+        for j in range(x):
+          new_image[i][j] = np.sum(image[i:i+m, j:j+m]*kernel)
+    return new_image
+  # identity
+  kernel = np.array([[0,0,0], [0,1,0], [0,0,0]])
+  convolution2d(processed_img, kernel)
+  # edge detection
+  kernel = np.array([[-1,-1,-1],[-1,8,-1], [-1,-1,-1]])
+  convolution2d(processed_img, kernel)
+  # sharpening
+  kernel = np.array([[0,-1,0],[-1, 5, -1],[0, -1, 0]])
+  convolution2d(processed_img, kernel)
+  
+  @end
+

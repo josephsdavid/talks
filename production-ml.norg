@@ -1,17 +1,8 @@
-@document.meta
-  title: production-ml
-  description: 
-  authors: david
-  categories: 
-  created: 2022-01-20
-  version: 0.0.9
-@end
-
 = TOC
 
 * Writing production ready ML code
-  Or, how to get and keep your work in production, *without losing sleep at night*!
-  By /David Josephs/
+  Or, how to get and keep your work in production, *without making yourself miserable*!
+  By /David Josephs/!
 
 
 * About me!
@@ -31,15 +22,12 @@
    **** Deep representation/contrastive learning of multimodal medical data
 
  ** Current role
-  *** Built out company's entire ML ecosystem from near scratch
+  *** Building out ML ecosystem
   *** Models on both live and semi-live data, scaled across 5000+ machines
-   **** Marketed as flagship feature of our product
    **** Live anomaly detection and unsupervised event categorization
-    ***** Described as "black magic" by clients
    **** Live pattern identification
    **** Optimization
    **** Signal segmentation and prediction
-   **** Current project: Reinforcement learning based optimization
 
 * Overview
 
@@ -117,7 +105,7 @@
   
   labels = IsolationForest.fit_predict(smoothed_load[:, np.newaxis])
   @end
-
+  
   This is totally great! Now wouldnt be funny if your boss asked you to:
   ~ Deploy this at a very large scale (running thousands of times per hour)
   ~ Using very questionable data
@@ -201,7 +189,7 @@
   result = AD.run()
   AD.upload_to_dynamo("secret_table", {"labels":result.tolist()})
   @end
-
+  
 * Classes example 
 
   Since all clients will have a client id, machine_id, and some variables to query, we can make our helpers even better.
@@ -231,7 +219,7 @@
           return
   
   @end
-
+  
   Now, we can easily use this class to get our data, for really any application:
 
   @code python
@@ -259,7 +247,7 @@
       labels = IsolationForest.fit_predict(smoothed_load[:, np.newaxis])
       stack.upload_to_dynamo("secret_table", {"labels":result.tolist()})
   @end
-
+  
   Our 30 lines of non reusable code has turned into about 15 lines of readable, reusable code. 
   With this, we can not only rapidly develop 1 model, but start building several, quickly!
   This framework for extending classes through small subclasses can be applied as much as you want, any group of related things you are going to use more than once belong in a shared class!
@@ -359,7 +347,7 @@
           logging.info("success!")
           return
   @end
-
+  
   In this case, we may want to know (but not often, only in the case of major database errors) what timespan we are querying, and we definitely want to keep track of what we are sending to a table which may be used by our coworkers.
 
 * Python logging demo
@@ -440,8 +428,8 @@
                   self.has_data = False
           return
   @end
-
-  Now, your data engineer will be able to understand what problems you are having, and where the cause is quickly, and they will like you better, and you will know when a problem is your problem vs someone else's!
+  
+  Now, your data engineer will be able to understand what problems you are having, and where the cause is quickly, and they will like you better!
 
 * Python logging demo
   Now lets wrap this up in our handler. We do not need to add any code at that highest level, we just need to handle the missing data:

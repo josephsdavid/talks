@@ -84,7 +84,8 @@ mean?
 >>> int
 >>> int.__add__
 
-```example: numbers 
+```
+
 
 Julia is a functional language and uses a paradigm called _multiple dispatch_.
 Lets look at the same example:
@@ -97,7 +98,7 @@ methods(+)
 @which 4.5 + 1.
 @which 1+4.5
 
-```example: numbers
+```
 
 Something fishy is going on here!
 

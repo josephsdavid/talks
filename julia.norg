@@ -1,0 +1,122 @@
+@document.meta
+title: julia-talk
+description:
+authors: josephsdavid
+categories:
+created: 2022-06-29
+version: 0.0.11
+tangle: {
+    languages: {
+        julia: demo.jl
+    } 
+    scope: all
+}
+@end
+
+* Julia
+
+  > What is julia?
+
+  Julia is a high level programming language, like python or R, made
+  specifically for high performance numerical computing
+
+  > Why would you not use python?
+
+  Python is slow, OOP is hard, having to do vectorized numpy code is hard and
+  hard to read. When python needs to be fast, you also need to know C++ or
+  something like that. You could use numba or something else JIT compiled as
+  well, but that sucks!
+
+* Why julia
+
+  Julia gives you the high level, dynamic, interpreted language you want and
+  need to be happy, but has the speed of a low level compiled language like C,
+  C++, and Rust. See {https://julialang.org/benchmarks/}[The benchmarks]!
+
+* Why is python slow?
+
+  @code whiteboard 
+        parse               bytecode
+      ┌──────────┐       ┌───────────┐       ┌───────┐
+      │my_file.py├──────►│my_file.pyc│──────►│opcodes│
+      └──────────┘       └───────────┘       └───┬───┘
+                                                 │
+                                                 ▼
+                                           store in memory
+   ┌──────────────────┐  ┌────────────┐          │
+   │call compiled code│◄─┤call opcodes│ ◄────────┘
+   └─────────┬────────┘  └────────────┘
+             └───────┐
+                     ▼
+           ╔════════════════════╗
+           ║MACHINE INSTRUCTIONS║
+           ╚════════════════════╝
+  @end
+
+  Code is parsed (which is very slow as well, python function lookup is slow),
+  interpreter turns it into bytecode, then python VM turns bytecode into opcodes
+  which are stored in memory, which are then called by the cpu which load
+  compiled code up, and then the cpu instructions in the compiled code are
+  executed by your machine. This is a lot of steps!
+
+  Numpy is fast because you are closer to the compiled code, instead of calling
+  the same bit of compiled code 1000 times in a for loop, someone wrote that for
+  loop in fortran or C, so you need to go through this crazy process less!
+
+
+* How does julia work?
+
+  ~ /Parsing/: Code is parsed as an abstract syntax tree (AST)
+  ~ /Expansion/: Any macros or metaprograms are expanded, yielding a different
+    AST (we will touch on this further) 
+  ~ /Lowering/: Code is transformed into simpler code by julia
+  ~ /Typing/: Possible types are inferred by the julia interpreter. This is
+    important, knowing what type the inputs are means that the compiler can pick
+    a more optimized function 
+  ~ /Translation/: Simplified, typed AST is translated into LLVM (a compiler)
+    instructions
+  ~ /Compilation/: LLVM transforms code directly into machine instructions
+
+  This means that your julia code doesnt have to call up a bunch of other code
+  to run, it is actually directly turned into the code, but this is done
+  dynamically, so it is still an interpreted language, and the
+  interperter/compiler figure out the types for you, so you dont need to have
+  some horrible static typed code (look at C code or Java code)
+
+  The best of both worlds! This means that a for loop is just as fast if not 
+
+* Other reasons to use julia: functional programming
+
+  Python is an OOP language, meaning everything is an object! What does this
+  mean?
+
+  $$ example: numbers 
+  The number 1 is an object of class Int in python. We can add things together
+  because the `Int` class has a method, `__add__` defined.
+  $$
+
+  Julia is a functional language and uses a paradigm called /multiple dispatch/.
+  Lets look at the same example:
+
+  $$ example: numbers 
+  The number 1 is a symbol with type Int64 in julia. We can add things together
+  because there exists a function `+(Int64, Int64)`.
+  $$
+
+  What does this mean for you?
+
+  No classes!! Life is much easier without classes, and instead of defining a
+  new class to make our complicated thing which runs on complicated data, we
+  define functions which work on types!
+
+  This also has a second connotation, which is that there is /no performance
+  loss/ when using custom types vs using builtin types, because the only thing
+  that matters is function definition, and the compiler will figure everything
+  else out for you! 
+
+
+* Simple Julia demo: Scorekeeper
+
+
+
+

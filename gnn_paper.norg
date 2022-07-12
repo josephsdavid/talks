@@ -1,0 +1,22 @@
+* Self-Supervised Graph Neural Networks for Improved Electroencephalographic Seizure Analysis 
+** Machine learning is really all data representation (always has been meme)
+   How are we currently representing eeg
+   > as a (Timesteps x Channels x 1 x batches) array? How is CNN working on it
+   What information does this contain about the channels? 
+   - [ ] Verify how we represent channels
+   > very little
+   Is there a more natural representation?
+   > yes!
+** EEG as a graph
+   Explain the concept of an agecency matrix, an effective representation of the graph
+   Basically graph is somethe matrix to represent information at the nodes, and an adjacency matrix (learn more the truth)
+   Explain a weighted graph, and undirected vs directed
+   Weight adjacency matrix
+   Show as an analog on head (figure from paper), how it looks like a montage just by choosing some weights
+   Computer looking at it just like a human!
+** How to model a graph? 
+   - [ ] Understand the paper (reread)
+   There are many ways. In this paper the authors chose
+
+
+

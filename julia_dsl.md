@@ -81,13 +81,8 @@ mean?
 ```python
 
 >>> type(1)
-<class 'int'>
-
 >>> int
-<class 'int'>
-
 >>> int.__add__
-<slot wrapper '__add__' of 'int' objects>
 
 ```example: numbers 
 
@@ -185,7 +180,6 @@ class Point(object):
     >>> w = Point(1.2, 3.5)
     >>> z = p + q + 14
     >>> z
-    # <__main__.Point object at 0x100384d30>
 
     class Line(object):
         def __init__(self, p1, p2, p3):
@@ -200,11 +194,9 @@ class Point(object):
     >>> L1 = Line(1, 2, 3)
     >>> L2 = Line(4, 5, 6)
     >>> L1 + L2
-    # <__main__.Line object at 0x1003f8d30>
     >>> L3 = Line(p, q, z)
     >>> L4 = Line(q, z, p)
     >>> L3 + L4
-    # <__main__.Line object at 0x100490e20>
 
 ```
 

@@ -66,16 +66,16 @@ tangle: {
 
 * How does julia work?
 
-  ~ /Parsing/: Code is parsed as an abstract syntax tree (AST)
-  ~ /Expansion/: Any macros or metaprograms are expanded, yielding a different
+  ~ *Parsing*: Code is parsed as an abstract syntax tree (AST)
+  ~ *Expansion*: Any macros or metaprograms are expanded, yielding a different
     AST (we will touch on this further) 
-  ~ /Lowering/: Code is transformed into simpler code by julia
-  ~ /Typing/: Possible types are inferred by the julia interpreter. This is
+  ~ *Lowering*: Code is transformed into simpler code by julia
+  ~ *Typing*: Possible types are inferred by the julia interpreter. This is
     important, knowing what type the inputs are means that the compiler can pick
     a more optimized function 
-  ~ /Translation/: Simplified, typed AST is translated into LLVM (a compiler)
+  ~ *Translation*: Simplified, typed AST is translated into LLVM (a compiler)
     instructions
-  ~ /Compilation/: LLVM transforms code directly into machine instructions
+  ~ *Compilation*: LLVM transforms code directly into machine instructions
 
   This means that your julia code doesnt have to call up a bunch of other code
   to run, it is actually directly turned into the code, but this is done
@@ -85,38 +85,437 @@ tangle: {
 
   The best of both worlds! This means that a for loop is just as fast if not 
 
+* Is julia hard?
+
+  - [x] Can you write and use a function?
+  - [x] Can you do a for loop/map/while
+  - [x] Can you do sets and lists and vectors and dicts?
+  - [x] Can you use a dataframe?
+
+
 * Other reasons to use julia: functional programming
 
   Python is an OOP language, meaning everything is an object! What does this
   mean?
 
   $$ example: numbers 
-  The number 1 is an object of class Int in python. We can add things together
-  because the `Int` class has a method, `__add__` defined.
+  @code python
+
+    >>> type(1)
+    <class 'int'>
+
+    >>> int
+    <class 'int'>
+
+    >>> int.__add__
+    <slot wrapper '__add__' of 'int' objects>
+
+  @end
   $$
 
   Julia is a functional language and uses a paradigm called /multiple dispatch/.
   Lets look at the same example:
 
-  $$ example: numbers 
-  The number 1 is a symbol with type Int64 in julia. We can add things together
-  because there exists a function `+(Int64, Int64)`.
+  $$ example: numbers
+  @code julia 
+
+    typeof(1)
+    @which 1+2
+    methods(+)
+    @which 4.5 + 1.
+    @which 1+4.5
+
+  @end
   $$
 
-  What does this mean for you?
+  Something fishy is going on here!
 
-  No classes!! Life is much easier without classes, and instead of defining a
-  new class to make our complicated thing which runs on complicated data, we
-  define functions which work on types!
+* No classes
 
-  This also has a second connotation, which is that there is /no performance
-  loss/ when using custom types vs using builtin types, because the only thing
-  that matters is function definition, and the compiler will figure everything
-  else out for you! 
+  Thats right! There are no classes! But this is not the end of the world! We
+  can do anything you do in python, except differently! Instead of building
+  classes for complicated datatypes, we just extend functions for them!
+
+** Simple Demo
+
+   @code julia 
+
+    # code is still code
+    x = 4
+    y = 5
+    x + y
+    
+    
+    # functions are still functions
+    function demo(a, b, c = 2)
+        return (a + b) ^ c
+    end
+    # inline functions!
+    f(x) = x + 2
+    # nameless functions!
+        (x -> x + 2)(2)
+    
+    # calling
+    demo(4, 5, 6)
+    
+    # map
+    a = map((x -> demo(x, 5, 6)), 1:5)
+    
+    # broadcasting! magic!
+    b = demo.(1:5, 5, 6)
+    
+    # for loops!
+    c = Int64[]
+    for x in 1:5 
+        push!(c, demo(x, 5, 6))
+    end
+    
+    a == b == c
+    
+    # talk about lists for a moment
+    
+    # dicts!
+    d = Dict(zip(["a", "b", "c"], [1, 2, 3])) # pythonic
+    d["a"]
+    
+    # symbols!
+    d = Dict(:a => 1, :b => 2, :c => 3)
+    d[:a]
+
+    # sets
+    Set(repeat(collect(1:5), 55))
+
+   @end
+
+   It is just fancy python
+
+** Getting fancy: python code
+
+   @code python
+
+    class Point(object):
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+            def __add__(self, p):
+                if isinstance(p, Point):
+                    return Point(self.a + p.a, self.b + p.b)
+                elif isinstance(p, (float, int)):
+                    return Point(self.a + p, self.b + p)
+                else:
+                    raise TypeError(f"Cannot add {type(p)} to a Point!")
+
+    >>> p = Point(1, 2)
+    >>> q = Point(3, 4)
+    >>> w = Point(1.2, 3.5)
+    >>> z = p + q + 14
+    >>> z
+    # <__main__.Point object at 0x100384d30>
+
+    class Line(object):
+        def __init__(self, p1, p2, p3):
+            # we could subclass, but this means everything that works on a point
+            # must work on a line
+            self.p1 = p1
+            self.p2 = p2
+            self.p3 = p3
+        def __add__(self, l):
+            return Line(self.p1 + l.p1, self.p2 + l.p2, self.p3 + l.p3)
+
+    >>> L1 = Line(1, 2, 3)
+    >>> L2 = Line(4, 5, 6)
+    >>> L1 + L2
+    # <__main__.Line object at 0x1003f8d30>
+    >>> L3 = Line(p, q, z)
+    >>> L4 = Line(q, z, p)
+    >>> L3 + L4
+    # <__main__.Line object at 0x100490e20>
+
+   @end
+
+** Julia style
+
+   @code julia
+    import Base:+
+        struct Point{T}
+            x::T
+            y::T
+        end
+
+    p = Point(1, 2)
+    q = Point(3, 4)
+    w = Point(1.2, 3.5)
+
+    (+)(a::Point, b::Point) = Point(a.x + b.x, a.y + b.y)
+    # without a bunch of if statements, this is not possible in python
+    (+)(a::Point, b::Number) = Point(a.x + b, a.y + b)
+
+    z = p + q 
+    pp = Point(p, q)
+    qq = Point(q, p)
+    zz = pp + qq
+    z_shifted = zz + 4.5
+
+    struct Line{T}
+        p1::T
+        p2::T
+        p3::T
+    end
+
+    (+)(a::Line, b::Line) = Line(a.p1 + b.p1, a.p2 + b.p2, a.p3 + b.p3)
+    (+)(a::Line, b::Number) = Line(a.p1 + b, a.p2 + b, a.p3 + b)
+    L1 = Line(1, 2, 3)
+    L2 = Line(4, 5, 6)
+    L1 + L2 + 23
+    L3 = Line(p, q, z)
+    L4 = Line(q, z, p)
+    L3 + L4 + 467.234
+   @end
 
 
-* Simple Julia demo: Scorekeeper
 
+   Which is clearer?
 
+* Digging deeper
 
+  Making a DSL! (you really can't do this in python). Follows
+  {https://julialang.org/blog/2017/08/dsl/}[this post]
+
+  $$ domain specific language (DSL) 
+  a DSL is a small, simple language which is optimized for a specific task
+  $$
+
+** Making a simple DSL:
+
+   Suppose we want to create some sort of `NaiveModel` type, which runs whatever
+   function we put into it on whatever else is passed to it. We could do this
+   pretty easily:
+
+   @code julia 
+
+    struct NaiveModel{F}
+        f::F 
+    end
+
+    m = NaiveModel(x -> 2x)
+    m.f(23)
+
+    # overload the function call syntax
+    (m::NaiveModel)(x) = m.f(x)
+    m(23)
+
+   @end
+
+   Pretty cool! But so far we have just created a function!
+
+** Brief tangent: macros
+   A macro is a function that takes code and returns code! Pretty neat!
+
+*** Code as data
+
+    @code julia 
+
+     ex = :(x -> 2x)
+     ex
+     typeof(ex)
+
+    @end
+
+*** Manipulating code
+
+    @code julia 
+
+     function make_function(ex::Expr)
+         return :(x -> $ex)
+     end
+     ex = :(2x)
+     make_function(ex)
+
+     function make_model(ex::Expr)
+         return :(NaiveModel($ex))
+     end
+
+     make_model(make_function(ex))
+     m = eval(make_model(make_function(:(2x))))
+     m(23)
+
+    @end
+
+    This is ugly and painful!
+
+*** Macros!
+
+    @code julia 
+
+     macro naive_model(ex)
+         @show ex
+         @show typeof(ex)
+         return nothing
+     end
+
+     # does all the hard work for us!
+     m = @naive_model 2x 
+
+     macro naive_model(ex)
+         return make_model(make_function(ex))
+     end
+
+     m = @naive_model 2x
+
+     m(23)
+     m(44)
+
+    @end
+
+* Real world example: JuMP.jl
+  follows {https://jump.dev/JuMP.jl/stable/tutorials/linear/sudoku/}[Sudoko example]
+
+  Suppose we want to solve sudoku. We have a problem with the following
+  constraints:
+
+  - The numbers 1 to 9 must appear in each 3x3 square
+  - The numbers 1 to 9 must appear in each row
+  - The numbers 1 to 9 must appear in each column
+
+  and the following board
+
+  @code - 
+     [
+        5 3 0 │ 0 7 0 │ 0 0 0
+        6 0 0 │ 1 9 5 │ 0 0 0
+        0 9 8 │ 0 0 0 │ 0 6 0
+        ──────┼───────┼──────
+        8 0 0 │ 0 6 0 │ 0 0 3
+        4 0 0 │ 8 0 3 │ 0 0 1
+        7 0 0 │ 0 2 0 │ 0 0 6
+        ──────┼───────┼──────
+        0 6 0 │ 0 0 0 │ 2 8 0
+        0 0 0 │ 4 1 9 │ 0 0 5
+        0 0 0 │ 0 8 0 │ 0 7 9
+    ]                     
+   
+  @end
+
+  We can solve this using a very similar DSL, `JuMP.jl` 
+
+  @code julia 
+   using JuMP
+   using HiGHS # optimizer library
+
+   sudoku = Model(HiGHS.Optimizer)
+  @end
+
+  Now, lets set up our problem as follows:
+
+  @math  
+  X[i, j, k] = 1 ⟺  board[i,j] = k
+  @end
+
+  With this dataset definition, we can add variables to our model, using the JuMP DSL
+
+  @code julia 
+   @variable(sudoku, x[i = 1:9, j = 1:9, k = 1:9], Bin)
+   sudoku
+  @end
+
+  Next, we can constrain our optimization problem! The first constraint is very
+  lame: there can only be one number per sudoku cell:
+
+  @code julia 
+
+   for i in 1:9  ## For each row
+       for j in 1:9  ## and each column
+           # Sum across all the possible digits. One and only one of the digits
+           # can be in this cell, so the sum must be equal to one.
+           @constraint(sudoku, sum(x[i, j, k] for k in 1:9) == 1)
+       end
+   end
+
+  @end
+
+  Next, we need to add the constraint that every number in each row or column is
+  unique:
+
+  @code julia 
+
+   for ind in 1:9
+       for k in 1:9
+             # rows have unique numbers
+             @constraint(sudoku, sum(x[ind, j, k] for j in 1:9) == 1)
+             # columns have unique numbers
+             @constraint(sudoku, sum(x[i, ind, k] for i in 1:9) == 1)
+       end
+   end
+   
+  @end
+
+  Next the tricky one, we need to say that each 3x3 grid can have 1-9. We can
+  accomplish this by starting at the top left corner, and then indexing 2 to the
+  right and 2 down. Brief syntax trick: comprehensions!
+
+  @code julia 
+
+   [x for x in 1:3:7]
+   [[x for x in 1:3:7] for y in 1:3:7]
+   [[[r, c] for r in i:(i+2), c in j:(j+2)] for i in 1:3:7 for j in 1:3:7]
+   
+  @end
+
+  @code julia
+   for i in 1:3:7
+       for j in 1:3:7
+           for k in 1:9
+               @constraint(
+                   sudoku,
+                   sum(x[r, c, k] for r in i:(i+2), c in j:(j+2)) == 1
+               )
+           end
+       end
+   end
+   
+  @end
+
+  Now lets solve sudoku:
+
+  @code julia 
+   board = [
+      5 3 0 0 7 0 0 0 0
+      6 0 0 1 9 5 0 0 0
+      0 9 8 0 0 0 0 6 0
+      8 0 0 0 6 0 0 0 3
+      4 0 0 8 0 3 0 0 1
+      7 0 0 0 2 0 0 0 6
+      0 6 0 0 0 0 2 8 0
+      0 0 0 4 1 9 0 0 5
+      0 0 0 0 8 0 0 7 9
+   ]
+
+   for i in 1:9
+       for j in 1:9
+           if board[i,j] != 0
+               # some magic here because its a dsl
+               fix(x[i, j, board[i,j]], 1; force = true)
+           end
+       end
+   end
+
+   optimize!(sudoku)
+
+   x_val = value.(x)
+   sol = zeros(Int, 9, 9)  # 9x9 matrix of integers
+   for i in 1:9
+       for j in 1:9
+           for k in 1:9
+               # Integer programs are solved as a series of linear programs so the
+               # values might not be precisely 0 and 1. We can round them to
+               # the nearest integer to make it easier.
+               if round(Int, x_val[i, j, k]) == 1
+                   sol[i, j] = k
+               end
+           end
+       end
+   end
+
+   sol
+  @end
 

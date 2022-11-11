@@ -1,27 +1,62 @@
 =TOC
 
+* Deep learning
+
+** Matrix multiplication and its implicications
+   Let us start with multiplying a matrix $A$ by a vector $b$:
+
+   @code 
+
+                     
+            ┌-   -┐     ┌-  -┐           ┌-  -┐        ┌-  -┐
+            │ 1 2 │  ·  │  2 │  =   2 *  │  1 │ + 4 *  │  2 │
+            │ 3 4 │     │  4 │           │  3 │        │  4 │
+            └-   -┘     └-  -┘           └-  -┘        └-  -┘
+
+
+   @end
+
+   That is to say $Ab$ represents a `linear combination` of $A$ and $b$.
+
+   If we raise the dimensions of $b$ to be a matrix as well, we have:
+
+   @code 
+
+                                    ┌───────────────────────────┐
+                                    │                           │
+                                    │                           │
+            ┌-   -┐     ┌-   -┐     │                           │
+            │ 1 2 │  ·  │ 1 2 │  =  │                           │
+            │ 3 4 │     │ 0 4 │     │                           │
+            └-   -┘     └-   -┘     │                           │
+                                    └───────────────────────────┘
+
+   @end
+
+
+
 * Computer Vision
-  From basic building blocks to resnets and friends
+  Here we get the basics of how computer vi
 
-* Image representation
-  Its just numbers. Lets look at this grayscale image:
+** Image representation
+   Its just numbers. Lets look at this grayscale image:
 
-  @code
+   @code
               ┌───────┐
    ┌──────┐   │0 0 0 0│
    │  --  │ = │0 1 1 0│
    └──────┘   │0 0 0 0│
               └───────┘
-  
-  @end
 
-  Pretty simple. In reality, an NxN grayscale image is a NxN matrix,
-  with each number between 0 and 256 (an integer). 
+   @end
 
-* Color images
-  we simply have 3 matrices stacked on each other
+   Pretty simple. In reality, an NxN grayscale image is a NxN matrix,
+   with each number between 0 and 256 (an integer). 
 
-  @code
+** Color images
+   we simply have 3 matrices stacked on each other
+
+   @code
                                   ┌───────┐
                                   │0 0 0 0│
                              ┌───►│0 1 1 0│
@@ -37,15 +72,15 @@
                              └────►│0 1 1 0│
                                    │0 0 0 0│
                                    └───────┘
-  
-  @end
+
+   @end
 
 
 * The Convolution
-  We simply run a window the image, do a multiplication of the kernel over the window, sum, and that is the new pixel:
+  We simply run a window (/filter\/kernel/) over the image, do a multiplication of the kernel over the window, sum, and that is the new pixel:
   @code
-  
-  
+
+
                  original image
            ┌───────────────────────┐
            │ 0   0   0   0   0    0│       filter/kernel
@@ -74,24 +109,24 @@
                            │ 0  255 255 255 255   0│ 
                            │ 0   0   0   0   0    0│ 
                            └───────────────────────┘ 
-  
-  
-  
+
+
+
   @end
 
 * Convolution code
   @code python
-  
-  def convolution2d(image, kernel):
-    m, n = kernel.shape
-    if (m == n):
-      y, x = image.shape
-      y = y - m + 1
-      x = x - m + 1
-      new_image = np.zeros((y,x))
-      for i in range(y):
-        for j in range(x):
-          new_image[i][j] = np.sum(image[i:i+m, j:j+m]*kernel)
+
+def convolution2d(image, kernel):
+  m, n = kernel.shape
+  if (m == n):
+    y, x = image.shape
+    y = y - m + 1
+    x = x - m + 1
+    new_image = np.zeros((y,x))
+    for i in range(y):
+      for j in range(x):
+        new_image[i][j] = np.sum(image[i:i+m, j:j+m]*kernel)
     return new_image
   # identity
   kernel = np.array([[0,0,0], [0,1,0], [0,0,0]])
@@ -102,6 +137,6 @@
   # sharpening
   kernel = np.array([[0,-1,0],[-1, 5, -1],[0, -1, 0]])
   convolution2d(processed_img, kernel)
-  
+
   @end
 

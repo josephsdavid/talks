@@ -1,0 +1,149 @@
+@document.meta
+title: thinking
+description: 
+authors: david
+categories: 
+created: 2022-11-28
+updated: 2022-11-28
+version: 0.0.18
+@end
+
+* How to approach problems!
+
+  By me!
+
+* A problem
+
+  Lets imagine you work as an engineer or scientist at some company, which deals
+  with signals that look like this:
+
+  @code whiteboard 
+
+      ┌────────────────────────────────────────┐ 
+    1 │⢠⠀⠀⡇⠀⢸⠀⢀⡄⠀⢰⠀⠀⡇⠀⢰⠀⠀⡄⠀⢸⠀⠀⡇⠀⢠⠀⠀⡆⠀⢸⠀⠀⡇⠀⢀⡀⠀⡇⠀│ 
+      │⢹⠀⢠⡇⠀⣾⠀⢸⡇⠀⣼⠀⢀⡇⠀⣼⡀⢰⡇⠀⣸⠀⠀⡇⠀⢸⡆⢀⢇⠀⢸⠀⠀⣧⠀⢸⡇⠀⣷⠀│ 
+      │⢸⠀⢸⡇⠀⡿⡄⢸⢇⠀⣿⠀⢸⢇⠀⡇⡇⢸⢸⠀⡏⡆⢸⢱⠀⡇⡇⢸⢸⠀⡜⡇⢀⢿⠀⡜⡇⢠⢻⠀│ 
+      │⠘⡄⢸⢱⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+      │⠀⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+      │⠀⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+      │⠀⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+      │⠤⡧⡼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤│ 
+      │⠀⡇⡇⢸⢸⠀⡇⡇⢸⢠⠃⡇⡸⢸⢀⠇⡇⡸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⡀⡇⢱⢸⠈⡆│ 
+      │⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢠⠃⡇⡜⠸⣀⠇⢱⡸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇│ 
+      │⠀⡇⡇⢸⢸⠀⡇⡇⠸⣸⠀⢇⡇⠸⣼⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣧⠃⢸⡎⠀⣧⠃⢸⡸⠀⡇│ 
+      │⠀⢣⡇⠘⣼⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣷│ 
+      │⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿│ 
+      │⠀⢸⡇⠀⣿⠀⢸⠇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿│ 
+   -1 │⠀⠸⠇⠀⡇⠀⠸⠀⠀⠙⠀⠸⡇⠀⡏⠀⠘⠀⠀⠻⠀⢸⡇⠀⠏⠀⠀⠁⠀⢹⠀⢸⡇⠀⠋⠀⠀⠇⠀⢹│ 
+      └────────────────────────────────────────┘ 
+      ⠀0⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀100⠀ 
+
+ 
+  @end
+
+  Sometimes, something bad happens and this signal starts to get messed up and
+  look like:
+
+  @code whiteboard 
+      ┌────────────────────────────────────────┐ 
+    1 │⢠⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⣇⢠⣼⡀⠀⢀⡄⠀⠀⠀⠀⠀⡆⠀⠀⢸⡇⠀⠀⠀⢀⠀⠀⠀⠀⣷│ 
+      │⢸⡇⠀⠀⡇⠀⢰⠀⠀⠀⠀⠀⠀⠀⣿⢸⣿⡇⢰⢸⡇⠀⠀⠀⠀⠀⣷⠀⠀⢸⡇⠀⡀⠀⢸⠀⠀⡆⠀⣿│ 
+      │⢸⠳⡆⠀⡇⠀⢸⡀⠀⠀⠀⡄⠀⠀⣿⢸⣿⡇⢸⢸⡇⠀⡄⠀⣄⠀⣿⠀⠀⢸⡇⢸⡇⠀⢸⠀⠀⡇⠀⡇│ 
+      │⢸⠀⡇⢰⢇⠀⢸⡇⠀⠀⠀⡇⠀⢸⢹⢸⣿⡇⣸⢸⡇⢀⡇⠀⣿⠀⣿⠀⠀⡇⡇⢸⡇⠀⢸⠀⠀⡇⠀⡇│ 
+      │⢸⠀⡇⢸⢸⠀⢸⡇⠀⠀⠀⣷⡇⢸⢸⢸⣿⣿⣿⢸⡇⢸⡇⠀⣿⠀⣿⠀⠀⡇⡇⢸⡇⠀⢸⠀⢀⡇⠀⡇│ 
+      │⢸⠀⡇⢸⢸⠀⢸⡇⠀⢰⡆⡏⡇⢸⢸⢸⣿⣿⣿⢸⡇⢸⢣⠀⣿⠀⣿⠀⠀⡇⡇⢸⡇⠀⢸⡄⢸⡇⠀⡇│ 
+      │⢸⠀⡇⢸⢸⠀⢸⡇⠀⡜⣇⠇⡇⡸⢸⢸⣿⣿⣿⣼⡇⢸⢸⠀⣿⠀⣿⠀⠀⡇⡇⢸⡇⡇⢸⣧⢸⡇⠀⡇│ 
+      │⢼⠤⡧⢼⢼⠤⢼⡧⠤⡧⣿⠤⡧⡧⢼⢼⣿⣿⣿⣿⡧⢼⢼⠤⣿⠤⣿⠤⠤⡧⢧⢼⡧⡧⡧⣿⢼⡧⢼⠤│ 
+      │⡎⠀⣷⢸⢸⠀⢸⡇⠀⡇⣿⠀⡇⡇⠘⣼⣿⣿⣿⣿⡇⢸⢸⢰⡿⡀⣿⠀⠀⡇⢸⢸⣇⡇⡇⣿⡏⡇⢸⠀│ 
+      │⡇⠀⣿⢸⢸⠀⢸⡇⠀⡇⣿⠀⡇⡇⠀⡏⣿⣿⣿⣿⡇⢸⢸⣿⡇⡇⡇⡇⠀⡇⢸⢸⣿⡇⡇⡟⠃⢱⢸⠀│ 
+      │⡇⠀⣿⢸⢸⠀⡇⡇⠀⡇⣿⠀⡇⡇⠀⡇⡟⣿⣿⣿⡇⢸⢸⣿⡇⡇⡇⡇⠀⡇⢸⢸⣿⡇⡇⠀⠀⢸⢸⠀│ 
+      │⠀⠀⠘⣼⢸⠀⡇⡇⣰⠁⣿⠀⡇⡇⠀⡇⡇⢻⡟⣿⢣⡜⢸⣿⡇⣇⡇⡇⠀⡇⢸⢸⣿⡇⡇⠀⠀⢸⢸⠀│ 
+      │⠀⠀⠀⣿⢸⣠⡇⢱⣿⠀⣿⠀⣿⡇⠀⡇⡇⢸⡇⠉⢸⡇⢸⢹⡇⣿⠀⡇⠀⡇⢸⡎⣿⢇⡇⠀⠀⢸⢸⠀│ 
+      │⠀⠀⠀⣿⢸⣿⡇⢸⣿⠀⡟⠀⠘⡇⠀⡇⡇⢸⡇⠀⢸⡇⢸⠸⠇⣿⠀⣧⣴⠁⢸⡇⣿⢸⡇⠀⠀⢸⣸⠀│ 
+   -1 │⠀⠀⠀⠿⠘⠸⠇⢸⡏⠀⠇⠀⠀⡇⠀⠀⠁⠸⡇⠀⠀⠃⠈⠀⠀⢿⠀⠋⢹⠀⢸⠁⡇⢸⠃⠀⠀⠈⠁⠀│ 
+      └────────────────────────────────────────┘ 
+      ⠀0⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀100⠀ 
+ 
+  @end
+
+  This leads to a _very bad_ thing happening, which looks like this:
+
+  @code whiteboard 
+
+          ┌────────────────────────────────────────┐ 
+    1 000 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⣇⠀│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠀⠀⡇⠀⢸⡇⢀⣿⠀│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⡇⠀⢸⡄⠀⣿⠀⡜⡇⢸⢸⠀│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⠀⡇⠀⡸⡆⢸⢹⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⢠⢆⠀⡜⡄⢰⢹⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+          │⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⡴⡀⢠⢣⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀⡇⡇⢸⢸⠀│ 
+          │⠶⠦⠴⠶⡤⠮⢧⡼⢼⢤⠧⡧⡼⢼⢤⠧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤⡧⡧⢼⢼⠤│ 
+          │⠀⠀⠀⠀⠀⠀⠈⠀⠀⠙⠀⠸⠇⠀⣿⠀⢱⡇⠈⣾⠁⢣⡎⠘⣤⠃⢣⢸⠘⡄⡇⢣⢸⠸⡄⡇⢱⢸⠈⡆│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠘⠃⠀⢿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣷⠃⢸⡜⠀⡇⡇⢸⢸⠀⡇│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠇⠀⡿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣿⠀⢸⡎⠀⡇│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⠀⢿⠀⢸⡇⠀⣿⠀⢸⡇⠀⣷│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠸⡇⠀⣿⠀⢸⡇⠀⣿│ 
+          │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠈⡇⠀⣿│ 
+   -1 000 │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸│ 
+          └────────────────────────────────────────┘ 
+          ⠀0⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀100⠀ 
+ 
+  @end
+
+  Your boss says hey beloved employee! How are the wife and kids? Could you make a
+  model to identify these three patterns in our data (normal, becoming bad, bad)?
+  Maybe you could use deep learning or something that will really wow our clients!
+  How long would this take?
+
+
+* How do you tackle this problem?
+
+  How many people would just go and start doing what their boss said?
+  How would you approach this 
+
+* Everyone is wrong! 
+
+  - Can you really solve a difficult problem with 2 minutes of thought and just
+    writing code? 
+  -- No! 
+
+  - Will making the 5 time series plots, checking some spiritual "do EDA" boxes
+    help you? 
+  -- No!
+
+* Step 1: Thinking and notetaking!
+  
+  - Take _at least_ an entire day (depending on the problem, likely more), and
+    just think about the problem 
+
+* Step 1: Thinking and notetaking!
+  
+  - Take _at least_ an entire day (depending on the problem, likely more), and
+    just think about the problem 
+  - Write down everything
+
+* Step 1: Thinking and notetaking!
+  
+  - Take _at least_ an entire day (depending on the problem, likely more), and
+    just think about the problem 
+  - Write down everything
+  - Look at previous attempts to solve the problem with a critical eye
+
+* Step 1: Thinking and notetaking!
+  
+  - Take _at least_ an entire day (depending on the problem, likely more), and
+    just think about the problem 
+  - Write down everything
+  - Look at previous attempts to solve the problem with a critical eye
+  - Talk to coworkers and colleagues for how they would solve the problem
+
+* Step 1: Thinking and notetaking!
+  
+  - Take _at least_ an entire day (depending on the problem, likely more), and
+    just think about the problem 
+  - Write down everything
+  - Look at previous attempts to solve the problem with a critical eye
+  - Talk to coworkers and colleagues for how they would solve the problem
+  - Sleep on it 
+

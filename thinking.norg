@@ -4,7 +4,7 @@ description:
 authors: david
 categories: 
 created: 2022-11-28
-updated: 2022-11-29
+updated: 2022-11-30
 version: 0.0.18
 @end
 
@@ -288,7 +288,7 @@ We can actually apply this same style of thinking to all non trivial work. Lets
    # test that result errors if you get the wrong types
 
    function evaluate_perf(y, ŷ) 
-       labels = OneHotArrays.OneCold.(y, ŷ)
+       labels = OneHotArrays.OneCold.((y, ŷ))
        return Result(accuracy(labels...), calc_domain_result(y, ŷ))
    end
 

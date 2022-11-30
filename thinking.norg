@@ -4,20 +4,29 @@ description:
 authors: david
 categories: 
 created: 2022-11-28
-updated: 2022-11-28
+updated: 2022-11-29
 version: 0.0.18
 @end
 
-* How to approach problems!
+* How to solve all your problems
 
   By me!
+
+* Who am i?
+
+  I am just like you!
+
+
+* A problem
+
+  Group data into 3 classes, how to approach???
 
 * A problem
 
   Lets imagine you work as an engineer or scientist at some company, which deals
   with signals that look like this:
 
-  @code whiteboard 
+  @code - 
 
       ┌────────────────────────────────────────┐ 
     1 │⢠⠀⠀⡇⠀⢸⠀⢀⡄⠀⢰⠀⠀⡇⠀⢰⠀⠀⡄⠀⢸⠀⠀⡇⠀⢠⠀⠀⡆⠀⢸⠀⠀⡇⠀⢀⡀⠀⡇⠀│ 
@@ -146,4 +155,214 @@ version: 0.0.18
   - Look at previous attempts to solve the problem with a critical eye
   - Talk to coworkers and colleagues for how they would solve the problem
   - Sleep on it 
+
+* Step 2: Break it down!
+
+  Useful mental model, apply recursively
+
+** The stages of algorithm development
+
+*** Idea phase
+
+    You essentially completed this in step 1, however there is more needed to make 
+    your idea into a reality:
+
+    - Where does your data live?
+    - How will you deploy it? 
+    - Who will help you?
+
+*** Feasibility phase
+
+    - Minimal amount to know that your idea is possible, and can solve the problem
+    - /Definition of done/: Model works accurately on a minimal/ideal dataset with
+      "believable" results 
+    - Corner cases need not be covered
+    - Definition of "believable" is fuzzy, in essence it is: This code "can" work
+      in some conditions, and it is worth my time pursuing this further
+    - Clear methods of evaluation and performance targets have been met
+    - Most work in this phase is making the code run at all and defining
+      performance targets (which may move)
+
+*** Working baseline phase 
+    - Algorithm does what it is supposed to do, and does it well
+    - /Definition of done/: Meets desired performance targets on real data with
+      aggressors. High degree of confidence in the algorithm. After this point,
+      you trust its results
+    - Most work is done finding aggressors/modes of failure and addressing them
+      through experiments
+
+**** Experiment/aggressor driven development
+
+     ~ Find mode of failure or potential aggressor
+     ~ Make an issue or ticket discussing that 
+     ~ Make an issue or ticket proposing a solution (e.g., do step 1 and make a
+       well thought out note about it)
+     ~ (Optional, sometimes), get approval from a teammate on the proposed solution
+     ~ Implement solution outside of main library code
+     ~ Make PR with experiment
+     ~ Get approval
+     ~ Run experiment
+     ~ Close experiment issue
+     ~ Move experiment into the main library 
+     ~ Close main ticket/issue
+
+*** Production phase 
+    - Algorithm is good enough to be used by others on unseen data 
+    - /Definition of done/: Really you are never done, in fact once unseen data is
+    introduced, you will probably find more aggressors and more experiments to run
+    than ever before. However, you have: 
+    -- A stable API
+    -- All the necessary monitoring utilities
+    -- A good way to interpret results
+    -- A robust iteration and debugging workflow
+    -- General trust that nothing horrible is going to happen, only incremental
+       improvements
+
+* Recursion! 
+
+We can actually apply this same style of thinking to all non trivial work. Lets
+  imagine you want to implement a service that tracks the performance of your
+  model and stores results + necessary data to reproduce the results in an S3
+  bucket. Start with a note:
+
+** Feasibility stage: small piece of code
+
+   - [x] Function that takes in ideally formatted data and returns a table of
+   results 
+   -- [x] What does ideally formatted data look like?
+   - [x] What results do we want?
+   - [x] Function which writes the results and generating data to S3 
+
+** Demo!
+
+   First, lets make some data (this would go in our tests)
+   @code julia 
+   using Random
+   using MLJ
+   using OneHotArrays
+   using Test
+
+   softmax(x) = exp.(x) ./ sum(exp.(x); dims=1)
+
+   function make_y(n_samples=100, n_classes=5; seed=1)
+       return softmax(100 .* rand(MersenneTwister(seed), n_samples, n_classes))
+   end
+   @end
+
+   To calculate accuracy, we can just use sum up where the two hard labels are
+   equal:
+   @code julia
+   accuracy(y, ŷ) = sum(y.==ŷ) / length(y)
+
+   @test accuracy([1,2,3,4,5], [1,2,3,4,5]) == 1
+   @test accuracy([1,2,3,4,0], [1,2,3,4,5]) == 0.8
+   @test accuracy([0, 0, 0, 0, 0], [1,2,3,4,5]) == 0
+   @end
+
+    A note here is we need _hard_ labels, not probabilities, so somewhere we will
+   have to argmax it.
+
+    Now, we need a function that calculates our domain specific result from the
+   raw data:
+
+   @code julia 
+   function calc_domain_result(y, ŷ) 
+       result = sum(@. ŷ ^2 - y ^ 2) * 3/2
+   end
+   @end 
+   We would now stop, make a well tested pr that contains this code, and move
+   on to the next step
+
+
+   Using this y, ŷ stuff is nice, but this is not a real api and we would also
+   like to have our code glued in somewhere, and integrated. In the next PR, we
+   we want facilities that ensure our data is in the right format, and a function
+   that maybe does all of the work:
+
+   @code julia 
+   function Result(acc::Float64, domain_result::Float64)
+       return (; acc, domain_result)
+   end
+
+   # test that Result contains the right types
+   # test that result errors if you get the wrong types
+
+   function evaluate_perf(y, ŷ) 
+       labels = OneHotArrays.OneCold.(y, ŷ)
+       return Result(accuracy(labels...), calc_domain_result(y, ŷ))
+   end
+
+   # test that this result is the same as calculating these two results manually
+   # test that it works for multiple classes, and multiple types of arrays
+   @end
+
+    Now this comes in as the next PR, since we know our code works, we would like
+   it to now be code other people will use and maintain!
+
+   Next, we can write another function which writes the result to an s3 bucket (in
+   another PR perhaps!)
+
+   @code julia 
+   using AWS
+   using AWSS3
+
+   function write_result_to_s3(bucket::String, result::NamedTuple) 
+       path = S3Path(joinpath(bucket, UUID4(), ".csv"))
+       open(path, "w") do io
+           print(result, io)
+       end
+       return path
+   end 
+
+   y1 = make_y()
+   y2 = make_y()
+   path = write_result_to_s3("s3://ok", evaluate_perf(y1, y2))
+   @test isfile(path)
+   @end
+
+   Now we merge this in as a well tested PR! However, having this is not
+   convenient, so for others to use (production), we probably want a convenient
+   API:
+
+   @code julia 
+   function write_results_to_s3(bucket, y::AbstractMatrix, ŷ::AbstractMatrix)
+       return write_result_to_s3(bucket, evaluate_perf(y, ŷ))
+   end
+
+   const bucket = "s3://ok2"
+   p1 = write_results_to_s3(bucket, evaluate_perf(y1, y2))
+   p2 = write_results_to_s3(bucket, (y1, y2))
+
+   @test p1 != p2
+   @test read(p1) == read(p2)
+   @end
+
+   And ten maybe we also want a high level thing that does everything:
+
+   @code julia 
+   function write_results_to_s3(bucket, model::AbstractModel, x::AbstractMatrix,
+       y::AstractMatrix) 
+       write_result_to_s3(bucket, y, model(x))
+   end
+
+   # same tests as above
+   @end
+
+   And now we are done! Separating out the steps makes life *_significantly_*
+   easier, the code practically writes itself! If we invest a bit of time and make
+   small, self-contained, and incremental changes that are well thought out and
+   well tested
+
+
+* Conclusions? Discussion? 
+  - Take time to think about your problems for what feels like an unreasonable
+    amount of time
+  - Take notes, crucify your colleagues 
+  - Plan out everything, at each stage
+  - Know your exit criteria
+  - Know your exit criteria
+  - Break problems down into: 
+  -- Smallest possible example, on perfect data
+  -- Then make them good
+  -- Then integrate them/share them with the world
 
